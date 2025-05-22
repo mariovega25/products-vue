@@ -3,9 +3,30 @@
    <div class="col-lg-8 offset-lg-2" >
      <div class="table-responsive">
        <table class="table table-bordered table-hover">
-         <thead><tr><th>#</th></tr><tr><th>NOMBRE</th></tr><tr><th>DESCRIPCIÓN</th></tr><tr><th>PRECIO</th></tr><tr><th>ACCIONES</th></tr></thead>
+         <thead>
+         <tr>
+           <th>#</th>
+           <th>Nombre</th>
+           <th>Descripción</th>
+           <th>Precio</th>
+           <th>Acciones</th>
+         </tr>
+         </thead>
          <tbody class="table-group-divider" id="contenido">
-
+         <tr v-for="prod, i in products" :key="prod.id">
+           <td>{{ (i + 1) }}</td>
+           <td>{{ prod.name }}</td>
+           <td>{{ prod.description }}</td>
+           <td>${{ new Intl.NumberFormat('es-mx').format(prod.price) }}</td>
+           <td>
+             <router-link :to="{path:'edit/'+prod.id}" class="btn btn-warning">
+               <i class="fa-solid fa-edit"></i>
+             </router-link> &nbsp;
+             <button class="btn btn-danger" v-on:click="eliminar(prod.id,prod.name)">
+               <i class="fa-solid fa-edit"></i>
+             </button>
+           </td>
+         </tr>
          </tbody>
        </table>
      </div>
@@ -14,5 +35,29 @@
 </template>
 
 
-<script setup lang="ts">
+<script>
+import axios from "axios";
+import {confirmar} from "../funciones";
+
+export default {
+  data() {
+    return {products: null}
+
+  },
+  mounted() {
+    this.getProducts();
+  },
+  methods: {
+    getProducts() {
+      axios.get("http://laraproducts.test/api/products").then(
+          response => (
+              this.products = response.data
+          )
+      );
+    },
+    eliminar(id, nombre) {
+      confirmar(id, nombre);
+    }
+  }
+}
 </script>
